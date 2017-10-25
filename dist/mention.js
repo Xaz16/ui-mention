@@ -308,7 +308,7 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
     if (_this2.moved) return _this2.moved = false;
     // Don't trigger on selection
     if ($element[0].selectionStart != $element[0].selectionEnd) return;
-    var text = $element.val();
+    var text = $element[0].innerText || $element.val();
     // text to left of cursor ends with `@sometext`
     var match = _this2.searchPattern.exec(text.substr(0, $element[0].selectionStart));
 
