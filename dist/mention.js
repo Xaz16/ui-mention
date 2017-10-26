@@ -20,7 +20,7 @@ angular.module('ui.mention', []).directive('uiMention', function () {
 'use strict';
 
 angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$attrs", "$q", "$timeout", "$document", function ($element, $scope, $attrs, $q, $timeout, $document) {
-  var _this2 = this;
+  var _this3 = this;
 
   // Beginning of input or preceeded by spaces: @sometext
   this.delimiter = '@';
@@ -43,7 +43,7 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
    * @param  {ngModelController} model
    */
   this.init = function (model) {
-    var _this = this;
+    var _this2 = this;
 
     // Leading whitespace shows up in the textarea but not the preview
     $attrs.ngTrim = 'false';
@@ -52,11 +52,14 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
 
     ngModel.$parsers.push(function (value) {
       // Removes any mentions that aren't used
-      _this.mentions = _this.mentions.filter(function (mention) {
-        if (~value.indexOf(_this.label(mention))) return value = value.replace(_this.label(mention), _this.encode(mention));
+      _this2.mentions = _this2.mentions.filter(function (mention) {
+        if (~value.indexOf(_this.label(mention))) {
+          var reg = new RegExp('(\\s|^)' + _this.label(mention));
+          return value = value.replace(reg, _this.encode(mention));
+        }
       });
 
-      _this.render(value);
+      _this2.render(value);
 
       return value;
     });
@@ -68,9 +71,9 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
       value = value.toString();
 
       // Removes any mentions that aren't used
-      _this.mentions = _this.mentions.filter(function (mention) {
-        if (~value.indexOf(_this.encode(mention))) {
-          value = value.replace(_this.encode(mention), _this.label(mention));
+      _this2.mentions = _this2.mentions.filter(function (mention) {
+        if (~value.indexOf(_this2.encode(mention))) {
+          value = value.replace(_this2.encode(mention), _this2.label(mention));
           return true;
         } else {
           return false;
@@ -82,8 +85,8 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
 
     ngModel.$render = function () {
       $element.val(ngModel.$viewValue || '');
-      $timeout(_this.autogrow, true);
-      _this.render();
+      $timeout(_this2.autogrow, true);
+      _this2.render();
     };
   };
 
@@ -111,10 +114,10 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
     html = (html || '').toString();
     // Convert input to text, to prevent script injection/rich text
     html = parseContentAsText(html);
-    _this2.mentions.forEach(function (mention) {
-      html = html.replace(_this2.encode(mention), _this2.highlight(mention));
+    _this3.mentions.forEach(function (mention) {
+      html = html.replace(_this3.encode(mention), _this3.highlight(mention));
     });
-    _this2.renderElement().html(html);
+    _this3.renderElement().html(html);
     return html;
   };
 
@@ -263,13 +266,13 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
    * @todo Try to avoid using a regex match object
    */
   this.search = function (match) {
-    var _this3 = this;
+    var _this4 = this;
 
     this.searching = match;
 
     return $q.when(this.findChoices(match, this.mentions)).then(function (choices) {
-      _this3.choices = choices;
-      _this3.activeChoice = choices[0];
+      _this4.choices = choices;
+      _this4.activeChoice = choices[0];
       return choices;
     });
   };
@@ -305,17 +308,17 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
   // Interactions to trigger searching
   $element.on('keyup click focus', function (event) {
     // If event is fired AFTER activeChoice move is performed
-    if (_this2.moved) return _this2.moved = false;
+    if (_this3.moved) return _this3.moved = false;
     // Don't trigger on selection
     if ($element[0].selectionStart != $element[0].selectionEnd) return;
     var text = $element[0].innerText || $element.val();
     // text to left of cursor ends with `@sometext`
-    var match = _this2.searchPattern.exec(text.substr(0, $element[0].selectionStart));
+    var match = _this3.searchPattern.exec(text.substr(0, $element[0].selectionStart));
 
     if (match) {
-      _this2.search(match);
+      _this3.search(match);
     } else {
-      _this2.cancel();
+      _this3.cancel();
     }
 
     if (!$scope.$$phase) {
@@ -324,27 +327,27 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
   });
 
   $element.on('keydown', function (event) {
-    if (!_this2.searching) return;
+    if (!_this3.searching) return;
 
     switch (event.keyCode) {
       case 13:
         // return
-        _this2.select();
+        _this3.select();
         break;
       case 38:
         // up
-        _this2.up();
+        _this3.up();
         break;
       case 40:
         // down
-        _this2.down();
+        _this3.down();
         break;
       default:
         // Exit function
         return;
     }
 
-    _this2.moved = true;
+    _this3.moved = true;
     event.preventDefault();
 
     if (!$scope.$$phase) {
@@ -353,7 +356,7 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
   });
 
   this.onMouseup = (function (event) {
-    var _this4 = this;
+    var _this5 = this;
 
     if (event.target == $element[0]) return;
 
@@ -363,12 +366,12 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
 
     // Let ngClick fire first
     $scope.$evalAsync(function () {
-      _this4.cancel();
+      _this5.cancel();
     });
   }).bind(this);
 
   $element.on('focus', function (event) {
-    $document.on('mouseup', _this2.onMouseup);
+    $document.on('mouseup', _this3.onMouseup);
   });
 
   // Autogrow is mandatory beacuse the textarea scrolls away from highlights

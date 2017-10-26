@@ -32,8 +32,10 @@ angular.module('ui.mention')
     ngModel.$parsers.push( value => {
       // Removes any mentions that aren't used
       this.mentions = this.mentions.filter( mention => {
-       if (~value.indexOf(this.label(mention)))
-          return value = value.replace(this.label(mention), this.encode(mention));
+          if (~value.indexOf(_this.label(mention))) {
+              let reg = new RegExp('(\\s|^)' + _this.label(mention));
+              return value = value.replace(reg, _this.encode(mention));
+          }
       });
 
       this.render(value);
