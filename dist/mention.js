@@ -54,8 +54,8 @@ angular.module('ui.mention').controller('uiMention', ["$element", "$scope", "$at
       // Removes any mentions that aren't used
       _this2.mentions = _this2.mentions.filter(function (mention) {
         if (~value.indexOf(_this.label(mention))) {
-          var reg = new RegExp('(\\s|^)' + _this.label(mention));
-          return value = value.replace(reg, _this.encode(mention));
+          var reg = new RegExp('(\\s|^)' + _this2.label(mention));
+          return value = value.replace(reg, _this2.encode(mention));
         }
       });
 

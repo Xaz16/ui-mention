@@ -33,8 +33,8 @@ angular.module('ui.mention')
       // Removes any mentions that aren't used
       this.mentions = this.mentions.filter( mention => {
           if (~value.indexOf(_this.label(mention))) {
-              let reg = new RegExp('(\\s|^)' + _this.label(mention));
-              return value = value.replace(reg, _this.encode(mention));
+              let reg = new RegExp('(\\s|^)' + this.label(mention));
+              return value = value.replace(reg, this.encode(mention));
           }
       });
 
